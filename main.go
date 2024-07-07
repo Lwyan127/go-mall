@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/go-study-lab/go-mall/common/logger"
 	"github.com/go-study-lab/go-mall/config"
 	"net/http"
 
@@ -19,6 +20,9 @@ func main() {
 
 	g.GET("/config-read", func(c *gin.Context) {
 		database := config.Database
+		// 测试Zap 初始化的临时代码, 下节课会删掉
+		logger.ZapLoggerTest(c)
+
 		c.JSON(http.StatusOK, gin.H{
 			"type":     database.Type,
 			"max_life": database.MaxLifeTime,
