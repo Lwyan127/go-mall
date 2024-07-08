@@ -7,6 +7,7 @@ import (
 	"github.com/go-study-lab/go-mall/common/errcode"
 	"github.com/go-study-lab/go-mall/common/logger"
 	"github.com/go-study-lab/go-mall/config"
+	"github.com/go-study-lab/go-mall/logic/appservice"
 	"net/http"
 )
 
@@ -109,5 +110,16 @@ func TestResponseError(c *gin.Context) {
 	// 这一步正式开发时写在service层
 	err := errcode.Wrap("encountered an error when xxx service did xxx", baseErr)
 	app.NewResponse(c).Error(errcode.ErrServer.WithCause(err))
+	return
+}
+
+func TestGormLogger(c *gin.Context) {
+	svc := appservice.NewDemoAppSvc(c)
+	list, err := svc.GetDemoIdentities()
+	if err != nil {
+		app.NewResponse(c).Error(errcode.ErrServer.WithCause(err))
+		return
+	}
+	app.NewResponse(c).Success(list)
 	return
 }
