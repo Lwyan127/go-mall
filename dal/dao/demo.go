@@ -2,7 +2,9 @@ package dao
 
 import (
 	"context"
+	"github.com/go-study-lab/go-mall/common/util"
 	"github.com/go-study-lab/go-mall/dal/model"
+	"github.com/go-study-lab/go-mall/logic/do"
 )
 
 type DemoDao struct {
@@ -21,4 +23,15 @@ func (demo *DemoDao) GetAllDemos() (demos []*model.DemoOrder, err error) {
 	}
 
 	return demos, err
+}
+
+func (demo *DemoDao) CreateDemoOrder(demoOrder *do.DemoOrder) (*model.DemoOrder, error) {
+	model := new(model.DemoOrder)
+	err := util.CopyProperties(model, demoOrder)
+	if err != nil {
+		return nil, err
+	}
+	err = DB().WithContext(demo.ctx).
+		Create(model).Error
+	return model, err
 }
