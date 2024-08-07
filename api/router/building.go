@@ -3,6 +3,7 @@ package router
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-study-lab/go-mall/api/controller"
+	"github.com/go-study-lab/go-mall/common/middleware"
 )
 
 // 存放一些项目搭建过程中验证效果用的接口的路由
@@ -35,4 +36,10 @@ func registerBuildingRoutes(rg *gin.RouterGroup) {
 	// 测试封装的httptool
 	g.GET("httptool-get-test", controller.TestForHttpToolGet)
 	g.GET("httptool-post-test", controller.TestForHttpToolPost)
+	// 测试Token生成 - 后面有登录功能后会删掉, token在登录时生成
+	g.GET("token-make-test", controller.TestMakeToken)
+	// 测试刷新Token
+	g.GET("token-refresh-test", controller.TestRefreshToken)
+	// 测试Token认证中间件
+	g.GET("token-auth-test", middleware.AuthUser(), controller.TestAuthToken)
 }
