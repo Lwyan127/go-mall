@@ -86,3 +86,19 @@ func (us *UserAppSvc) UserLogout(userId int64, platform string) error {
 	err := us.userDomainSvc.LogoutUser(userId, platform)
 	return err
 }
+
+// PasswordResetApply 申请重置密码
+func (us *UserAppSvc) PasswordResetApply(request *request.PasswordResetApply) (*reply.PasswordResetApply, error) {
+	passwordResetToken, err := us.userDomainSvc.ApplyForPasswordReset(request.LoginName)
+	if err != nil {
+		return nil, err
+	}
+	reply := new(reply.PasswordResetApply)
+	reply.PasswordResetToken = passwordResetToken
+	return reply, nil
+}
+
+// PasswordReset 重置密码
+func (us *UserAppSvc) PasswordReset(request *request.PasswordReset) error {
+	return us.userDomainSvc.ResetPassword(request.Token, request.Code, request.Password)
+}
