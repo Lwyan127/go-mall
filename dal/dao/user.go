@@ -46,7 +46,7 @@ func (ud *UserDao) FindUserByLoginNam(loginName string) (*model.User, error) {
 
 func (ud *UserDao) FindUserById(userId int64) (*model.User, error) {
 	user := new(model.User)
-	err := DB().Find(&user).Error // Find 查找不到数据时不会返回 gorm.ErrRecordNotFound
+	err := DB().Where(model.User{ID: userId}).Find(&user).Error // Find 查找不到数据时不会返回 gorm.ErrRecordNotFound
 	if err != nil {
 		return nil, err
 	}
@@ -54,6 +54,6 @@ func (ud *UserDao) FindUserById(userId int64) (*model.User, error) {
 }
 
 func (ud *UserDao) UpdateUser(user *model.User) error {
-	err := DB().Model(user).Updates(user).Error
+	err := DBMaster().Model(user).Updates(user).Error
 	return err
 }

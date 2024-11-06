@@ -237,7 +237,7 @@ func (us *UserDomainSvc) LogoutUser(userId int64, platform string) error {
 // ApplyForPasswordReset 申请重置密码
 // @return passwordResetToken 重置密码时需要携带的Token信息，用于安全验证
 // @return err 错误返回
-func (us *UserDomainSvc) ApplyForPasswordReset(loginName string) (passwordResetToken string, err error) {
+func (us *UserDomainSvc) ApplyForPasswordReset(loginName string) (passwordResetToken, code string, err error) {
 	user, err := us.userDao.FindUserByLoginNam(loginName)
 	if err != nil {
 		err = errcode.Wrap("ApplyForPasswordResetError", err)
@@ -248,7 +248,7 @@ func (us *UserDomainSvc) ApplyForPasswordReset(loginName string) (passwordResetT
 		return
 	}
 	token, err := util.GenPasswordResetToken(user.ID)
-	code := util.RandNumStr(6)
+	code = util.RandNumStr(6)
 	if err != nil {
 		err = errcode.Wrap("ApplyForPasswordResetError", err)
 		return
