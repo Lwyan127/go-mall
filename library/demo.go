@@ -6,6 +6,7 @@ import (
 	"github.com/go-study-lab/go-mall/api/request"
 	"github.com/go-study-lab/go-mall/common/logger"
 	"github.com/go-study-lab/go-mall/common/util/httptool"
+	"time"
 )
 
 type DemoLib struct {
@@ -36,7 +37,7 @@ func (lib *DemoLib) TestPostCreateOrder() (*OrderCreateResult, error) {
 		OrderGoodsId: 1111110,
 	}
 	jsonReq, _ := json.Marshal(data)
-	httCode, respBody, err := httptool.Post(lib.ctx, "http://localhost:8080/building/create-demo-order", jsonReq)
+	httCode, respBody, err := httptool.Post(lib.ctx, "http://localhost:8080/building/create-demo-order", jsonReq, httptool.WithTimeout(10*time.Second))
 	logger.New(lib.ctx).Info("create-demo-order api response ", "code", httCode, "data", respBody, "err", err)
 
 	if err != nil {
