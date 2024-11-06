@@ -2,6 +2,7 @@ package domainservice
 
 import (
 	"context"
+	"github.com/go-study-lab/go-mall/api/request"
 	"github.com/go-study-lab/go-mall/common/enum"
 	"github.com/go-study-lab/go-mall/common/errcode"
 	"github.com/go-study-lab/go-mall/common/logger"
@@ -26,17 +27,33 @@ func NewUserDomainSvc(ctx context.Context) *UserDomainSvc {
 
 // GetUserBaseInfo 因为还没开发注册登录功能, 这里先Mock一个返回
 func (us *UserDomainSvc) GetUserBaseInfo(userId int64) *do.UserBaseInfo {
-	return &do.UserBaseInfo{
-		ID:        12345678,
-		Nickname:  "Kevin",
-		LoginName: "kev@gomall.com",
-		Verified:  1,
-		Avatar:    "",
-		Slogan:    "",
-		IsBlocked: enum.UserBlockStateNormal,
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
+	user, err := us.userDao.FindUserById(userId)
+	log := logger.New(us.ctx)
+	if err != nil {
+		log.Error("GetUserBaseInfoError", "err", err)
+		return nil
 	}
+	userBaseInfo := new(do.UserBaseInfo)
+	err = util.CopyProperties(userBaseInfo, user)
+	if err != nil {
+		log.Error("GetUserBaseInfoError", "err", err)
+		return nil
+	}
+	return userBaseInfo
+}
+
+// UpdateUserBaseInfo 更新用户的基本信息
+func (us *UserDomainSvc) UpdateUserBaseInfo(request *request.UserInfoUpdate, userId int64) error {
+	user, err := us.userDao.FindUserById(userId)
+	if err != nil {
+		return err
+	}
+
+	user.Avatar = request.Avatar
+	user.Nickname = request.Nickname
+	user.Slogan = request.Slogan
+	err = us.userDao.UpdateUser(user)
+	return err
 }
 
 // GenAuthToken 生成AccessToken和RefreshToken

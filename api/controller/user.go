@@ -149,3 +149,32 @@ func PasswordReset(c *gin.Context) {
 
 	app.NewResponse(c).SuccessOk()
 }
+
+// UserInfo 个人信息查询
+func UserInfo(c *gin.Context) {
+	userId := c.GetInt64("userId")
+	userSvc := appservice.NewUserAppSvc(c)
+	userInfoReply := userSvc.UserInfo(userId)
+	if userInfoReply == nil {
+		app.NewResponse(c).Error(errcode.ErrParams)
+		return
+	}
+	app.NewResponse(c).Success(userInfoReply)
+}
+
+// UpdateUserInfo 个人信息更新
+func UpdateUserInfo(c *gin.Context) {
+	request := new(request.UserInfoUpdate)
+	if err := c.ShouldBindJSON(request); err != nil {
+		app.NewResponse(c).Error(errcode.ErrParams.WithCause(err))
+		return
+	}
+	userSvc := appservice.NewUserAppSvc(c)
+	err := userSvc.UserInfoUpdate(request, c.GetInt64("userId"))
+	if err != nil {
+		app.NewResponse(c).Error(errcode.ErrServer.WithCause(err))
+		return
+	}
+
+	app.NewResponse(c).SuccessOk()
+}
