@@ -47,7 +47,7 @@ func (ud *UserDao) FindUserByLoginNam(loginName string) (*model.User, error) {
 
 func (ud *UserDao) FindUserById(userId int64) (*model.User, error) {
 	user := new(model.User)
-	err := DB().Where(model.User{ID: userId}).Find(&user).Error // Find 查找不到数据时不会返回 gorm.ErrRecordNotFound
+	err := DB().WithContext(ud.ctx).Where(model.User{ID: userId}).Find(&user).Error // Find 查找不到数据时不会返回 gorm.ErrRecordNotFound
 	if err != nil {
 		return nil, err
 	}
@@ -55,7 +55,7 @@ func (ud *UserDao) FindUserById(userId int64) (*model.User, error) {
 }
 
 func (ud *UserDao) UpdateUser(user *model.User) error {
-	err := DBMaster().Model(user).Updates(user).Error
+	err := DBMaster().WithContext(ud.ctx).Model(user).Updates(user).Error
 	return err
 }
 
@@ -132,7 +132,7 @@ func (ud *UserDao) UpdateUserAddress(address *do.UserAddressInfo) error {
 
 func (ud *UserDao) FindUserAddresses(userId int64) ([]*model.UserAddress, error) {
 	addresses := make([]*model.UserAddress, 0)
-	err := DB().Where(model.UserAddress{UserId: userId}).
+	err := DB().WithContext(ud.ctx).Where(model.UserAddress{UserId: userId}).
 		Order("`default` DESC"). // 把默认地址排第一个
 		Find(&addresses).Error
 	return addresses, err
@@ -140,14 +140,14 @@ func (ud *UserDao) FindUserAddresses(userId int64) ([]*model.UserAddress, error)
 
 func (ud *UserDao) GetSingleAddress(addressId int64) (*model.UserAddress, error) {
 	address := new(model.UserAddress)
-	err := DB().Where(model.UserAddress{ID: addressId}).
+	err := DB().WithContext(ud.ctx).Where(model.UserAddress{ID: addressId}).
 		Find(&address).Error
 	return address, err
 }
 
 func (ud *UserDao) GetUserDefaultAddress(userId int64) (*model.UserAddress, error) {
 	address := new(model.UserAddress)
-	err := DB().Where(model.UserAddress{UserId: userId, Default: enum.AddressIsUserDefault}).
+	err := DB().WithContext(ud.ctx).Where(model.UserAddress{UserId: userId, Default: enum.AddressIsUserDefault}).
 		First(&address).Error
 	if err != nil && err != gorm.ErrRecordNotFound {
 		return nil, err
@@ -156,5 +156,5 @@ func (ud *UserDao) GetUserDefaultAddress(userId int64) (*model.UserAddress, erro
 }
 
 func (ud *UserDao) DeleteOneAddress(address *model.UserAddress) error {
-	return DBMaster().Delete(address).Error
+	return DBMaster().WithContext(ud.ctx).Delete(address).Error
 }
