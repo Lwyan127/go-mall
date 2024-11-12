@@ -5,7 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-study-lab/go-mall/common/logger"
 	"github.com/go-study-lab/go-mall/common/util"
-	"io/ioutil"
+	"io"
 	"net"
 	"net/http"
 	"net/http/httputil"
@@ -49,15 +49,26 @@ func (w bodyLogWriter) Write(b []byte) (int, error) {
 func LogAccess() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		//保存body
-		reqBody, _ := ioutil.ReadAll(c.Request.Body)
-		c.Request.Body = ioutil.NopCloser(bytes.NewReader(reqBody))
+		var reqBody []byte
+		contentType := c.GetHeader("Content-Type")
+		// multipart/form-data 文件上传请求, 不在日志里记录body
+		if !strings.Contains(contentType, "multipart/form-data") {
+			reqBody, _ = io.ReadAll(c.Request.Body)
+			c.Request.Body = io.NopCloser(bytes.NewReader(reqBody))
+		}
 		start := time.Now()
 		blw := &bodyLogWriter{body: bytes.NewBufferString(""), ResponseWriter: c.Writer}
 		c.Writer = blw
 
 		accessLog(c, "access_start", time.Since(start), reqBody, nil)
 		defer func() {
-			accessLog(c, "access_end", time.Since(start), reqBody, blw.body.String())
+			var responseLogging string
+			if c.Writer.Size() > 10*1024 { // 响应大于10KB 不记录
+				responseLogging = "Response data size is too Large to log"
+			} else {
+				responseLogging = blw.body.String()
+			}
+			accessLog(c, "access_end", time.Since(start), reqBody, responseLogging)
 		}()
 		c.Next()
 
