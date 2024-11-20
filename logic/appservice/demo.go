@@ -85,3 +85,9 @@ func (das *DemoAppSvc) InitCommodityCategoryData() error {
 	err := cds.InitCategoryData()
 	return err
 }
+
+func (das *DemoAppSvc) InitCommodityData() error {
+	cds := domainservice.NewCommodityDomainSvc(das.ctx)
+	err := cds.InitCommodityData()
+	return err
+}
