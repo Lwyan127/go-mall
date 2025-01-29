@@ -4,7 +4,9 @@ go 1.18
 
 require (
 	github.com/DATA-DOG/go-sqlmock v1.5.2
+	github.com/agiledragon/gomonkey/v2 v2.11.0
 	github.com/gin-gonic/gin v1.7.0
+	github.com/h2non/gock v1.2.0
 	github.com/jinzhu/copier v0.4.0
 	github.com/redis/go-redis/v9 v9.5.3
 	github.com/samber/lo v1.47.0
@@ -29,6 +31,7 @@ require (
 	github.com/go-playground/validator/v10 v10.4.1 // indirect
 	github.com/go-sql-driver/mysql v1.7.0 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
+	github.com/h2non/parth v0.0.0-20190131123155-b4df798d6542 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect

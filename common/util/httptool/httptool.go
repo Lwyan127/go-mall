@@ -21,6 +21,11 @@ var (
 )
 
 func getHttpClient() *http.Client {
+	if _Client != nil {
+		// 因为Unit test里要把Client换掉, 所以虽然用了once.Do但是还是先判断一下_Client有没有实例化
+		// 不然在单测里, Mock API调用时, gock没办法拦截http client对外部API的请求
+		return _Client
+	}
 	once.Do(func() {
 		tr := &http.Transport{
 			//Proxy: http.ProxyFromEnvironment,
@@ -40,6 +45,12 @@ func getHttpClient() *http.Client {
 	})
 	return _Client
 }
+
+// SetUTHttpClient 让单元测试能把httpClient覆盖成具有Mock拦截设置的HttpClient
+func SetUTHttpClient(client *http.Client) {
+	_Client = client
+}
+
 func Request(method string, url string, options ...Option) (httpStatusCode int, respBody []byte, err error) {
 	start := time.Now()
 	reqOpts := defaultRequestOptions() // 默认的请求选项
