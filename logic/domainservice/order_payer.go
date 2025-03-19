@@ -196,7 +196,7 @@ func NewOrderPayTemplate(ctx context.Context, userId int64, orderNo, payScene st
 		payHandler.UserId = userId
 		payHandler.OrderNo = orderNo
 		payHandler.Scene = payScene
-
+		payTemplate.OrderPayHandlerContract = payHandler
 	}
 
 	return payTemplate

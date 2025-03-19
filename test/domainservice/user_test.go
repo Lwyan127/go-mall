@@ -79,7 +79,7 @@ func TestUserDomainSvc_RegisterUser(t *testing.T) {
 		})
 
 		Convey("When the login name of user is not occupied", func() {
-			gomonkey.ApplyMethod(s, "FindUserByLoginNam", func(_ *dao.UserDao, loginName string) (*model.User, error) {
+			gomonkey.ApplyMethod(s, "FindUserByLoginName", func(_ *dao.UserDao, loginName string) (*model.User, error) {
 				return new(model.User), nil
 			})
 			Convey("Then user should be created successfully", func() {
@@ -91,7 +91,7 @@ func TestUserDomainSvc_RegisterUser(t *testing.T) {
 		})
 
 		Convey("When the login name of user has already been occupied by other users", func() {
-			gomonkey.ApplyMethod(s, "FindUserByLoginNam", func(_ *dao.UserDao, loginName string) (*model.User, error) {
+			gomonkey.ApplyMethod(s, "FindUserByLoginName", func(_ *dao.UserDao, loginName string) (*model.User, error) {
 				return &model.User{LoginName: givenUser.LoginName}, nil
 			})
 			Convey("Then the user's registration should be unsuccessful", func() {

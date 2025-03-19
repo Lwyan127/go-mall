@@ -181,7 +181,7 @@ func (us *UserDomainSvc) VerifyAccessToken(accessToken string) (*do.TokenVerify,
 
 func (us *UserDomainSvc) RegisterUser(userInfo *do.UserBaseInfo, plainPassword string) (*do.UserBaseInfo, error) {
 	// 确定登录名可用
-	existedUser, err := us.userDao.FindUserByLoginNam(userInfo.LoginName)
+	existedUser, err := us.userDao.FindUserByLoginName(userInfo.LoginName)
 	if err != nil {
 		return nil, errcode.Wrap("UserDomainSvcRegisterUserError", err)
 	}
@@ -208,7 +208,7 @@ func (us *UserDomainSvc) RegisterUser(userInfo *do.UserBaseInfo, plainPassword s
 }
 
 func (us *UserDomainSvc) LoginUser(loginName, plainPassword, platform string) (*do.TokenInfo, error) {
-	existedUser, err := us.userDao.FindUserByLoginNam(loginName)
+	existedUser, err := us.userDao.FindUserByLoginName(loginName)
 	if err != nil {
 		return nil, errcode.Wrap("UserDomainSvcLoginUserError", err)
 	}
@@ -255,7 +255,7 @@ func (us *UserDomainSvc) LogoutUser(userId int64, platform string) error {
 // @return passwordResetToken 重置密码时需要携带的Token信息，用于安全验证
 // @return err 错误返回
 func (us *UserDomainSvc) ApplyForPasswordReset(loginName string) (passwordResetToken, code string, err error) {
-	user, err := us.userDao.FindUserByLoginNam(loginName)
+	user, err := us.userDao.FindUserByLoginName(loginName)
 	if err != nil {
 		err = errcode.Wrap("ApplyForPasswordResetError", err)
 		return

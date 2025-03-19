@@ -36,7 +36,7 @@ func (ud *UserDao) CreateUser(userInfo *do.UserBaseInfo, userPasswordHash string
 	return userModel, nil
 }
 
-func (ud *UserDao) FindUserByLoginNam(loginName string) (*model.User, error) {
+func (ud *UserDao) FindUserByLoginName(loginName string) (*model.User, error) {
 	user := new(model.User)
 	err := DB().Where(model.User{LoginName: loginName}).First(&user).Error
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
