@@ -17,6 +17,7 @@ func registerBuildingRoutes(rg *gin.RouterGroup) {
 	g.GET("config-read", controller.TestConfigRead)
 	// 测试日志门面Logger的使用
 	g.GET("logger-test", controller.TestLogger)
+	g.GET("logger-facade-test", controller.TestLoggerFacade)
 	// 测试服务的访问日志
 	g.POST("access-log-test", controller.TestAccessLog)
 	// 测试服务的崩溃日志

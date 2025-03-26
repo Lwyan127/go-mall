@@ -39,6 +39,17 @@ func TestLogger(c *gin.Context) {
 	return
 }
 
+func TestLoggerFacade(c *gin.Context) {
+	logger.Info(c, "logger info", "level", "info", "name", "golang", "val", 8)
+	logger.Debug(c, "logger debug", "level", "debug", "data", gin.H{"name": "golang"})
+	logger.Warn(c, "logger warn", "level", "warn")
+	logger.Error(c, "logger error", "err", nil)
+	c.JSON(http.StatusOK, gin.H{
+		"status": "ok",
+	})
+	return
+}
+
 func TestAccessLog(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"status": "ok",
