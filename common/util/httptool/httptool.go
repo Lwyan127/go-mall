@@ -11,6 +11,7 @@ import (
 	"io/ioutil"
 	"net"
 	"net/http"
+	"strings"
 	"sync"
 	"time"
 )
@@ -20,10 +21,29 @@ var (
 	once    sync.Once
 )
 
+const (
+	maxLogContentSize = 1024 * 1024 // 1MB
+)
+
+// formatLogContent 格式化日志内容，超过大小限制或文件上传时返回提示信息
+func formatLogContent(content []byte, headers map[string]string) string {
+	// 检查是否是文件上传
+	if contentType, exists := headers["Content-Type"]; exists {
+		if strings.Contains(contentType, "multipart/form-data") {
+			return "File upload data, skip logging"
+		}
+	}
+	// 检查内容大小
+	if len(content) > maxLogContentSize {
+		return "Data too long, skip logging"
+	}
+	return string(content)
+}
+
 func getHttpClient() *http.Client {
 	if _Client != nil {
-		// 因为Unit test里要把Client换掉, 所以虽然用了once.Do但是还是先判断一下_Client有没有实例化
-		// 不然在单测里, Mock API调用时, gock没办法拦截http client对外部API的请求
+		// 因为Unit test里要把Client换掉, 所以虽然用了once.Do 但是还是先判断一下_Client有没有实例化
+		// 不然在单测里, Mock API时, gock没办法拦截对外部API的请求
 		return _Client
 	}
 	once.Do(func() {
@@ -63,7 +83,13 @@ func Request(method string, url string, options ...Option) (httpStatusCode int, 
 	log := logger.New(reqOpts.ctx)
 	defer func() {
 		if err != nil {
-			log.Error("HTTP_REQUEST_ERROR_LOG", "method", method, "url", url, "body", reqOpts.data, "reply", respBody, "err", err)
+			log.Error("HTTP_REQUEST_ERROR_LOG",
+				"method", method,
+				"url", url,
+				"body", formatLogContent(reqOpts.data, reqOpts.headers),
+				"reply", formatLogContent(respBody, reqOpts.headers),
+				"status", httpStatusCode,
+				"err", err)
 		}
 	}()
 	// 创建请求对象
@@ -95,11 +121,14 @@ func Request(method string, url string, options ...Option) (httpStatusCode int, 
 	dur := time.Since(start).Milliseconds()
 	defer func() {
 		if dur >= 3000 { // 超过 3s 返回, 记一条 Warn 日志
-			log.Warn("HTTP_REQUEST_SLOW_LOG", "method", method, "url", url, "body", reqOpts.data, "reply", respBody, "err", err, "dur/ms", dur)
+			log.Warn("HTTP_REQUEST_SLOW_LOG", "method", method, "url", url, "body", formatLogContent(reqOpts.data, reqOpts.headers), "reply", formatLogContent(respBody, reqOpts.headers), "err", err, "dur/ms", dur)
 		} else {
-			log.Debug("HTTP_REQUEST_DEBUG_LOG", "method", method, "url", url, "body", string(reqOpts.data), "reply", string(respBody), "err", err, "dur/ms", dur)
+			log.Debug("HTTP_REQUEST_DEBUG_LOG", "method", method, "url", url, "body", formatLogContent(reqOpts.data, reqOpts.headers), "reply", formatLogContent(respBody, reqOpts.headers), "err", err, "dur/ms", dur)
 		}
 	}()
+
+	// 先读取响应体, 再进行状态码检查, 避免非HTTP 200 状态码时, 日志中响应体记录不到
+	respBody, _ = ioutil.ReadAll(resp.Body)
 
 	httpStatusCode = resp.StatusCode
 	if httpStatusCode != http.StatusOK {
@@ -108,7 +137,6 @@ func Request(method string, url string, options ...Option) (httpStatusCode int, 
 		return
 	}
 
-	respBody, _ = ioutil.ReadAll(resp.Body)
 	return
 }
 
