@@ -48,7 +48,7 @@ func (r *response) Error(err error) {
 	appErr := errcode.ErrServer.Clone() // 生成一个appErr 用作目标错误类型的判定
 	if !errors.As(err, &appErr) {       // 如果err可以转换成appErr的类型, errors.As会把err赋值到appErr, 此时appErr会反映出err真实的值
 		// 如果err不是appErr的类型, 把它变成appErr
-		appErr.WithCause(err)
+		appErr = appErr.WithCause(err)
 	}
 	r.Code = appErr.Code()
 	r.Msg = appErr.Msg()
