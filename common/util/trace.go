@@ -41,3 +41,20 @@ func GetTraceInfoFromCtx(ctx context.Context) (traceId, spanId, pSpanId string) 
 
 	return
 }
+
+// GetLocalIP 获取本机的第一个非回环IP地址
+func GetLocalIP() string {
+	addrs, err := net.InterfaceAddrs()
+	if err != nil {
+		return "127.0.0.1"
+	}
+	for _, addr := range addrs {
+		// 检查ip地址判断是否回环地址
+		if ipnet, ok := addr.(*net.IPNet); ok && !ipnet.IP.IsLoopback() {
+			if ipnet.IP.To4() != nil {
+				return ipnet.IP.String()
+			}
+		}
+	}
+	return "127.0.0.1"
+}
