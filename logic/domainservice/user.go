@@ -207,20 +207,23 @@ func (us *UserDomainSvc) RegisterUser(userInfo *do.UserBaseInfo, plainPassword s
 	return userInfo, nil
 }
 
-func (us *UserDomainSvc) LoginUser(loginName, plainPassword, platform string) (*do.TokenInfo, error) {
+func (us *UserDomainSvc) LoginUser(loginName, plainPassword, platform string) (*do.UserBaseInfo, *do.TokenInfo, error) {
 	existedUser, err := us.userDao.FindUserByLoginName(loginName)
 	if err != nil {
-		return nil, errcode.Wrap("UserDomainSvcLoginUserError", err)
+		return nil, nil, errcode.Wrap("UserDomainSvcLoginUserError", err)
 	}
 	if existedUser.ID == 0 {
-		return nil, errcode.ErrUserNotRight
+		return nil, nil, errcode.ErrUserNotRight
 	}
 	if !util.BcryptCompare(existedUser.Password, plainPassword) {
-		return nil, errcode.ErrUserNotRight
+		return nil, nil, errcode.ErrUserNotRight
 	}
 	// 生成Token 和 Session
 	tokenInfo, err := us.GenAuthToken(existedUser.ID, platform, "")
-	return tokenInfo, err
+	userInfo := new(do.UserBaseInfo)
+	util.CopyProperties(userInfo, existedUser)
+
+	return userInfo, tokenInfo, err
 }
 
 func (us *UserDomainSvc) LogoutUser(userId int64, platform string) error {

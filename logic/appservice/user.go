@@ -8,8 +8,10 @@ import (
 	"github.com/go-study-lab/go-mall/common/errcode"
 	"github.com/go-study-lab/go-mall/common/logger"
 	"github.com/go-study-lab/go-mall/common/util"
+	"github.com/go-study-lab/go-mall/event"
 	"github.com/go-study-lab/go-mall/logic/do"
 	"github.com/go-study-lab/go-mall/logic/domainservice"
+	"time"
 )
 
 type UserAppSvc struct {
@@ -62,14 +64,14 @@ func (us *UserAppSvc) UserRegister(userRegisterReq *request.UserRegister) error 
 	}
 
 	// TODO 写注册成功后的外围辅助逻辑, 比如注册成功后给用户发确认邮件|短信
-
+	event.DispatchUserCreated(us.ctx, userInfo.ID, userInfo.LoginName)
 	// TODO 如果产品逻辑是注册后帮用户登录, 那这里再掉登录的逻辑
 
 	return nil
 }
 
 func (us *UserAppSvc) UserLogin(userLoginReq *request.UserLogin) (*reply.TokenReply, error) {
-	tokenInfo, err := us.userDomainSvc.LoginUser(userLoginReq.Body.LoginName, userLoginReq.Body.Password, userLoginReq.Header.Platform)
+	userInfo, tokenInfo, err := us.userDomainSvc.LoginUser(userLoginReq.Body.LoginName, userLoginReq.Body.Password, userLoginReq.Header.Platform)
 	if err != nil {
 		return nil, err
 	}
@@ -78,7 +80,8 @@ func (us *UserAppSvc) UserLogin(userLoginReq *request.UserLogin) (*reply.TokenRe
 	util.CopyProperties(tokenReply, tokenInfo)
 
 	// TODO 执行用户登录成功后发送消息通知之类的外围辅助型逻辑
-
+	// 触发用户登录成功事件
+	event.DispatchUserLoggedIn(us.ctx, userInfo.ID, userInfo.Nickname, userLoginReq.Header.Platform, time.Now().Format("2006-01-02 15:04:05"))
 	return tokenReply, nil
 }
 
