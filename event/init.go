@@ -2,6 +2,7 @@ package event
 
 import (
 	"sync"
+	"time"
 
 	"github.com/go-study-lab/go-mall/event/events"
 	"github.com/go-study-lab/go-mall/event/listeners"
@@ -32,4 +33,11 @@ func RegisterEventListeners() {
 			&listeners.UserLoggedInListener{},
 		)
 	})
+}
+
+func ShutdownEventDispatcher(waitTimeout time.Duration) error {
+	if waitTimeout == 0 || waitTimeout > 30*time.Second {
+		waitTimeout = 30 * time.Second
+	}
+	return event.Dispatcher().Shutdown(waitTimeout)
 }

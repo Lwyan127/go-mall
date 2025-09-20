@@ -181,8 +181,8 @@ github.com/jstemmer/go-junit-report v0.0.0-20190106144839-af01ea7f8024/go.mod h1
 github.com/jstemmer/go-junit-report v0.9.1/go.mod h1:Brl9GWCQeLvo8nXZwPNNblvFj/XSXhF0NWZEnDohbsk=
 github.com/jtolds/gls v4.20.0+incompatible h1:xdiiI2gbIgH/gLH7ADydsJ1uDOEzR8yvV7C0MuV77Wo=
 github.com/jtolds/gls v4.20.0+incompatible/go.mod h1:QJZ7F/aHp+rZTRtaJ1ow/lLfFfVYBRgL+9YlvaHOwJU=
-github.com/kevinyan815/event v1.0.1 h1:+Q0knBz0Dby+2Bl5LeVUMfqMVnCD/fl0++vzFvOrywg=
-github.com/kevinyan815/event v1.0.1/go.mod h1:EjjAaxriDEztkvr67ZCDVVIBoB7R/0vJfWojzVyCaVI=
+github.com/kevinyan815/event v1.0.3 h1:4zoian83JBRt2SUvJEQO/Gy8UWRo8VfxXXVPoFdIqhQ=
+github.com/kevinyan815/event v1.0.3/go.mod h1:EjjAaxriDEztkvr67ZCDVVIBoB7R/0vJfWojzVyCaVI=
 github.com/kisielk/gotool v1.0.0/go.mod h1:XhKaO+MFFWcvkIS/tQcRk01m1F5IRFswLeQ+oQHNcck=
 github.com/kisielk/sqlstruct v0.0.0-20201105191214-5f3e10d3ab46/go.mod h1:yyMNCyc/Ib3bDTKd379tNMpB/7/H5TjM2Y9QJ5THLbE=
 github.com/kr/fs v0.1.0/go.mod h1:FFnZGqtBN9Gxj7eW1uZ42v5BccTP0vu6NEaFoC2HwRg=

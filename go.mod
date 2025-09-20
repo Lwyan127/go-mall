@@ -8,7 +8,7 @@ require (
 	github.com/gin-gonic/gin v1.7.0
 	github.com/h2non/gock v1.2.0
 	github.com/jinzhu/copier v0.4.0
-	github.com/kevinyan815/event v1.0.1
+	github.com/kevinyan815/event v1.0.3
 	github.com/redis/go-redis/v9 v9.5.3
 	github.com/samber/lo v1.47.0
 	github.com/smartystreets/goconvey v1.8.1
