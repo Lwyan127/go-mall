@@ -86,6 +86,7 @@ func main() {
 			log.Info("Server closed under request")
 		} else {
 			log.Error("Server closed unexpected", "err", err)
+			panic(err)
 		}
 	}
 	// 等待所有清理工作完成
