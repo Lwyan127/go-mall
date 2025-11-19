@@ -6,16 +6,24 @@ import (
 	"math/rand"
 	"net"
 	"strconv"
-	"strings"
 	"time"
 )
 
 func GenerateSpanID(addr string) string {
-	strAddr := strings.Split(addr, ":")
-	ip := strAddr[0]
-	ipLong, _ := Ip2Long(ip)
 	times := uint64(time.Now().UnixNano())
 	rand.Seed(time.Now().UnixNano())
+	// 尝试解析IP地址，如果失败则使用默认值
+	var ipLong uint32 = 0x7f000001 // 默认127.0.0.1
+
+	// 支持IPv4和IPv6的安全解析
+	if host, _, err := net.SplitHostPort(addr); err == nil {
+		if ip := net.ParseIP(host); ip != nil {
+			if ipv4 := ip.To4(); ipv4 != nil {
+				ipLong = binary.BigEndian.Uint32(ipv4)
+			}
+			// IPv6地址保持使用默认值，避免复杂的哈希计算
+		}
+	}
 	spanId := ((times ^ uint64(ipLong)) << 32) | uint64(rand.Int31())
 	return strconv.FormatUint(spanId, 16)
 }
