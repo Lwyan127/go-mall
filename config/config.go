@@ -26,8 +26,8 @@ type appConfig struct {
 		AppId           string `mapstructure:"appid"`
 		MchId           string `mapstructure:"mchid"`
 		PrivateSerialNo string `mapstructure:"private_serial_no"`
-		AesKey          string `mapstructur:"aes_key""`
-		NotifyUrl       string `mapstructur:"notify_url"`
+		AesKey          string `mapstructure:"aes_key"`
+		NotifyUrl       string `mapstructure:"notify_url"`
 	}
 }
 
